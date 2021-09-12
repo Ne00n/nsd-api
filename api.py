@@ -15,7 +15,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         records = {}
         if Path(zone).is_file():
             records[zone] = {}
-            with open(zone) as f:
+            with open(self.dir+zone) as f:
                 lines = f.readlines()
             for line in lines:
                 #sub ttl IN type target/ttl
@@ -38,7 +38,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             self.send_response(401)
             self.response("error","token required")
             return
-        records = self.loadZone(self.dir+domain)
+        records = self.loadZone(domain)
         if domain not in records or subdomain not in records[domain][type]:
             self.send_response(404)
             self.response("error","record not found")
@@ -49,7 +49,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target'], subdomain+'\t300\tIN\t'+type+'\t'+self.client_address[0]+"\n", zone)
             with open(self.dir+domain, "w") as file:
                 file.write(zone)
-            os.system("/usr/bin/systemctl reload nsd")  
+            os.system("/usr/bin/systemctl reload nsd")
             self.send_response(200)
             self.response("success","record updated")
 

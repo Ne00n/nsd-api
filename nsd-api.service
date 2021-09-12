@@ -1,0 +1,14 @@
+[Unit]
+Description=nsd api service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=nsd-api
+Group=nsd-api
+Type=simple
+WorkingDirectory=/home/nsd-api/nsd-api/
+ExecStart=python3 /home/nsd-api/nsd-api/api.py
+
+[Install]
+WantedBy=multi-user.target

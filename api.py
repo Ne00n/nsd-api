@@ -13,7 +13,7 @@ class MyHandler(SimpleHTTPRequestHandler):
 
     def loadZone(self,zone):
         records = {}
-        if Path(zone).is_file():
+        if Path(self.dir+zone).is_file():
             records[zone] = {}
             with open(self.dir+zone) as f:
                 lines = f.readlines()

@@ -1,5 +1,5 @@
 # nsd-api
-python3 webservice providing a simple API to change nsd nameserver records
+python3 webservice providing a simple API to change nsd nameserver records<br />
 **Setup**<br />
 Give the nsd-api user permissions to modify the zones you want<br />
 ```
@@ -17,3 +17,4 @@ DynDNS
 localhost:8080/mahkey/domain.net/lxd/A/update
 localhost:8080/mahkey/domain.net/lxd/AAAA/update
 ```
+Put Nginx or whatever you want in front as reverse proxy to provide TLS connections

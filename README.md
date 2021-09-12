@@ -22,5 +22,5 @@ Because python3 http service can't speak duelstack<br />
 **DynDNS**<br />
 ```
 localhost:8080/mahkey/domain.net/lxd/A/update
-localhost:8080/mahkey/domain.net/lxd/AAAA/update
+v6.localhost:8080/mahkey/domain.net/lxd/AAAA/update
 ```

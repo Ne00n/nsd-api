@@ -49,6 +49,8 @@ class MyHandler(SimpleHTTPRequestHandler):
             zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target'], subdomain+'\t300\tIN\t'+type+'\t'+self.client_address[0]+"\n", zone)
             with open(self.dir+domain, "w") as file:
                 file.write(zone)
+            self.send_response(200)
+            self.response("success","record updated")
 
 server = HTTPServer(('127.0.0.1', 8080), MyHandler)
 try:

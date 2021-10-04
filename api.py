@@ -5,8 +5,8 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 class MyHandler(SimpleHTTPRequestHandler):
     dir = "/etc/nsd/nsd.conf.d/"
     print("Loading config")
-    with open(path+'config.json') as handle:
-        self.config = json.loads(handle.read())
+    with open('config.json') as f:
+        config = json.load(f)
 
     def response(self,key,msg):
         self.send_header("Content-Type", "application/json")

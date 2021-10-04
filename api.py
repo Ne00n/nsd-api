@@ -46,7 +46,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         if param == "update":
             with open(self.dir+domain, 'r') as file:
                 zone = file.read()
-            zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target'], subdomain+'\t300\tIN\t'+type+'\t'+self.client_address[0]+"\n", zone)
+            zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target'], subdomain+'\t300\tIN\t'+type+'\t'+self.headers.get("X-Real-IP")+"\n", zone)
             with open(self.dir+domain, "w") as file:
                 file.write(zone)
             os.system("sudo /usr/bin/systemctl reload nsd")

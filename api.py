@@ -7,6 +7,7 @@ class MyHandler(SimpleHTTPRequestHandler):
     print("Loading config")
     with open('config.json') as f:
         config = json.load(f)
+    print("Ready")
 
     def response(self,key,msg):
         self.send_header("Content-Type", "application/json")

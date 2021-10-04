@@ -1,0 +1,33 @@
+server {
+  listen 80;
+  listen [::]:80;
+  server_name nsd.domain.com;
+  server_tokens off;
+
+   location '/.well-known/acme-challenge' {
+     default_type "text/plain";
+     root         /var/www/html/acme-challange;
+     autoindex    on;
+  }
+
+  location / {
+   return 301 https://nsd.domain.com$request_uri;
+  }
+
+}
+
+server {
+  listen [::]:443 ssl http2;
+  server_tokens off;
+
+  ssl_certificate /etc/letsencrypt/live/nsd.domain.com/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/nsd.domain.com/privkey.pem;
+
+  server_name nsd.domain.com;
+  proxy_set_header X-Real-IP $remote_addr;
+
+  location / {
+  	proxy_pass http://localhost:8080;
+  }
+
+}

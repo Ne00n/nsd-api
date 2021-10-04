@@ -1,5 +1,9 @@
 # nsd-api
 python3 webservice providing a simple API to change nsd nameserver records<br />
+
+**Dependencies**<br />
+none
+
 # Setup<br />
 Give the nsd-api user permissions to modify the zones you want<br />
 ```
@@ -17,6 +21,9 @@ Don't forget to add:<br />
 proxy_set_header X-Real-IP $remote_addr;
 ```
 Because python3 http service can't speak duelstack<br />
+
+**Service (systemd)**<br />
+Check nsd-api.service file
 
 # Examples
 **DynDNS**<br />

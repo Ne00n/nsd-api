@@ -31,6 +31,9 @@ class MyHandler(SimpleHTTPRequestHandler):
         return records
 
     def do_GET(self):
+        if len(self.path) > 200:
+            self.send_response(414)
+            self.response("error","way to fucking long")
         parts = re.split(r'/', self.path)
         if len(parts) < 6:
             self.send_response(400)

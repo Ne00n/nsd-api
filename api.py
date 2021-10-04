@@ -4,7 +4,9 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 class MyHandler(SimpleHTTPRequestHandler):
     dir = "/etc/nsd/nsd.conf.d/"
-    tokens = ["mahkey"]
+    print("Loading config")
+    with open(path+'config.json') as handle:
+        self.config = json.loads(handle.read())
 
     def response(self,key,msg):
         self.send_header("Content-Type", "application/json")
@@ -34,7 +36,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             self.response("error","incomplete")
             return
         empty, token, domain, subdomain, type, param = self.path.split('/')
-        if token not in self.tokens:
+        if token not in self.config["tokens"]:
             self.send_response(401)
             self.response("error","token required")
             return

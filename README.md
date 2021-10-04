@@ -5,6 +5,10 @@ python3 webservice providing a simple API to change nsd nameserver records<br />
 none
 
 # Setup<br />
+Rename and edit the tokens in config.json
+```
+cp config.example.json config.json
+```
 Give the nsd-api user permissions to modify the zones you want<br />
 ```
 cd /etc/nsd/nsd.conf.d/

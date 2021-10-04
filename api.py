@@ -5,7 +5,7 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 class MyHandler(SimpleHTTPRequestHandler):
     dir = "/etc/nsd/nsd.conf.d/"
     print("Loading config")
-    with open('config/config.json') as f:
+    with open('configs/config.json') as f:
         config = json.load(f)
     print("Ready")
 

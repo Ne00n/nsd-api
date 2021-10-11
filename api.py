@@ -42,6 +42,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         if len(self.path) > 200:
             self.send_response(414)
             self.response("error","way to fucking long")
+            return
         parts = re.split(r'/', self.path)
         if len(parts) < 6 or len(parts) > 7:
             self.send_response(400)

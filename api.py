@@ -9,7 +9,8 @@ class MyHandler(SimpleHTTPRequestHandler):
         config = json.load(f)
     print("Ready")
 
-    def response(self,key,msg):
+    def response(self,httpCode,key,msg):
+        self.send_response(httpCode)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
         self.wfile.write(bytes(json.dumps({key: msg}).encode()))
@@ -31,30 +32,25 @@ class MyHandler(SimpleHTTPRequestHandler):
         return records
 
     def loadFile(self,file):
-        with open(file, 'r') as file:
-            return file.read()
+        with open(file, 'r') as file: return file.read()
 
     def saveFile(self,file,data):
-        with open(file, "w") as file:
-            file.write(data)
+        with open(file, "w") as file: file.write(data)
 
     def do_GET(self):
         if len(self.path) > 200:
-            self.send_response(414)
-            self.response("error","way to fucking long")
+            self.response(414,"error","way to fucking long")
             return
         parts = re.split(r'/', self.path)
         if len(parts) < 6 or len(parts) > 7:
-            self.send_response(400)
-            self.response("error","incomplete")
+            self.response(400,"error","incomplete")
             return
         if len(parts) == 6:
             empty, token, domain, subdomain, type, param = self.path.split('/')
         elif len(parts) == 7:
             empty, token, domain, subdomain, type, param, target = self.path.split('/')
         if token not in self.config["tokens"]:
-            self.send_response(401)
-            self.response("error","token required")
+            self.response(401,"error","token required")
             return
         records = self.loadZone(domain)
         if domain not in records or subdomain not in records[domain][type]:
@@ -66,27 +62,23 @@ class MyHandler(SimpleHTTPRequestHandler):
                     zone = zone + subdomain + "\t3600\tIN\t"+type+"\t"+target+"\n"
                 self.saveFile(self.dir+domain,zone)
                 os.system("sudo /usr/bin/systemctl reload nsd")
-                self.send_response(200)
-                self.response("success","record added")
+                self.response(200,"success","record added")
                 return
             else:
-                self.send_response(404)
-                self.response("error","record not found")
+                self.response(404,"error","record not found")
                 return
         if param == "update":
             zone = self.loadFile(self.dir+domain)
             zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target'], subdomain+'\t300\tIN\t'+type+'\t'+self.headers.get("X-Real-IP")+"\n", zone)
             self.saveFile(self.dir+domain,zone)
             os.system("sudo /usr/bin/systemctl reload nsd")
-            self.send_response(200)
-            self.response("success","record updated")
+            self.response(200,"success","record updated")
         elif param == "delete":
             zone = self.loadFile(self.dir+domain)
             zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target'], "", zone)
             self.saveFile(self.dir+domain,zone)
             os.system("sudo /usr/bin/systemctl reload nsd")
-            self.send_response(200)
-            self.response("success","record updated")
+            self.response(200,"success","record updated")
 
 server = HTTPServer(('127.0.0.1', 8080), MyHandler)
 try:

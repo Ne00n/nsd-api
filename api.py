@@ -31,7 +31,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         return records
 
     def loadFile(self,file):
-        with open(self.dir+domain, 'r') as file:
+        with open(file, 'r') as file:
             return file.read()
 
     def saveFile(self,file,data):

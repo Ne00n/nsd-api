@@ -75,6 +75,13 @@ class MyHandler(SimpleHTTPRequestHandler):
             os.system("sudo /usr/bin/systemctl reload nsd")
             self.send_response(200)
             self.response("success","record updated")
+        elif param == "delete":
+            zone = self.loadFile(self.dir+domain)
+            zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target'], "", zone)
+            self.saveFile(self.dir+domain,zone)
+            os.system("sudo /usr/bin/systemctl reload nsd")
+            self.send_response(200)
+            self.response("success","record updated")
 
 server = HTTPServer(('127.0.0.1', 8080), MyHandler)
 try:

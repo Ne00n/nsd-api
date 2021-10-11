@@ -59,7 +59,10 @@ class MyHandler(SimpleHTTPRequestHandler):
         if domain not in records or subdomain not in records[domain][type]:
             if param == "add":
                 zone = self.loadFile(self.dir+domain)
-                zone = zone + subdomain + "\t3600\tIN\t"+type+"\t"+target+"\n"
+                if type == "TXT":
+                    zone = zone + subdomain + "\t3600\tIN\t"+type+'\t"'+target+'"\n'
+                else:
+                    zone = zone + subdomain + "\t3600\tIN\t"+type+"\t"+target+"\n"
                 self.saveFile(self.dir+domain,zone)
                 os.system("sudo /usr/bin/systemctl reload nsd")
                 self.send_response(200)

@@ -32,7 +32,7 @@ Because python3 http service can't speak duelstack<br />
 localhost:8080/mahkey/domain.net/lxd/A/update
 v6.localhost:8080/mahkey/domain.net/lxd/AAAA/update
 ```
-**Add Record**<br> />
+**Add Record**<br />
 ```
 localhost:8080/mahkey/domain.net/lxd/A/add/127.0.0.1
 v6.localhost:8080/mahkey/domain.net/lxd/AAAA/add/::1

@@ -51,7 +51,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         if len(parts) == 6:
             empty, token, domain, subdomain, type, param = self.path.split('/')
         elif len(parts) == 7:
-            emtpy, token, domain, subdomain, type, param, target = self.path.split('/')
+            empty, token, domain, subdomain, type, param, target = self.path.split('/')
         if token not in self.config["tokens"]:
             self.send_response(401)
             self.response("error","token required")

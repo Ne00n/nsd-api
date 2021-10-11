@@ -52,7 +52,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         if token not in self.config["tokens"]:
             self.response(401,"error","token required")
             return
-        results = re.findall("^(@|[a-zA-Z0-9]{2,30}\.[a-zA-Z]{2,30})$",domain, re.MULTILINE)
+        results = re.findall("^[a-zA-Z0-9]{2,30}\.[a-zA-Z]{2,30}$",domain, re.MULTILINE)
         if not results:
             self.response(400,"error","invalid domain")
             return

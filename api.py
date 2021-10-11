@@ -68,6 +68,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                 os.system("sudo /usr/bin/systemctl reload nsd")
                 self.send_response(200)
                 self.response("success","record added")
+                return
             else:
                 self.send_response(404)
                 self.response("error","record not found")

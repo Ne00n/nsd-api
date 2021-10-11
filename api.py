@@ -30,6 +30,14 @@ class MyHandler(SimpleHTTPRequestHandler):
                     records[zone][parts[3]][parts[0]]['target'] = parts[4]
         return records
 
+    def loadFile(self,file):
+        with open(self.dir+domain, 'r') as file:
+            return file.read()
+
+    def saveFile(self,file,data):
+        with open(file, "w") as file:
+            file.write(data)
+
     def do_GET(self):
         if len(self.path) > 200:
             self.send_response(414)
@@ -39,22 +47,31 @@ class MyHandler(SimpleHTTPRequestHandler):
             self.send_response(400)
             self.response("error","incomplete")
             return
-        empty, token, domain, subdomain, type, param = self.path.split('/')
+        if len(parts) == 6:
+            empty, token, domain, subdomain, type, param = self.path.split('/')
+        elif len(parts) == 7:
+            emtpy, token, domain, subdomain, type, param, target = self.path.split('/')
         if token not in self.config["tokens"]:
             self.send_response(401)
             self.response("error","token required")
             return
         records = self.loadZone(domain)
         if domain not in records or subdomain not in records[domain][type]:
-            self.send_response(404)
-            self.response("error","record not found")
-            return
+            if param == "add":
+                zone = self.loadFile(self.dir+domain)
+                zone = zone + subdomain + "\t3600\tIN\t"+type+"\t"+target+"\n"
+                self.saveFile(self.dir+domain,zone)
+                os.system("sudo /usr/bin/systemctl reload nsd")
+                self.send_response(200)
+                self.response("success","record added")
+            else:
+                self.send_response(404)
+                self.response("error","record not found")
+                return
         if param == "update":
-            with open(self.dir+domain, 'r') as file:
-                zone = file.read()
+            zone = self.loadFile(self.dir+domain)
             zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target'], subdomain+'\t300\tIN\t'+type+'\t'+self.headers.get("X-Real-IP")+"\n", zone)
-            with open(self.dir+domain, "w") as file:
-                file.write(zone)
+            self.saveFile(self.dir+domain,zone)
             os.system("sudo /usr/bin/systemctl reload nsd")
             self.send_response(200)
             self.response("success","record updated")

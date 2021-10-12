@@ -7,7 +7,8 @@ none
 # Setup<br />
 Rename and edit the tokens in config.json
 ```
-cp config.example.json config.json
+cp configs/config.example.json configs/config.json
+cp configs/nsd-api.service /etc/systemd/system/
 ```
 Give the nsd-api user permissions to modify the zones you want<br />
 ```

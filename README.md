@@ -35,10 +35,10 @@ v6.localhost:8080/mahkey/domain.net/lxd/AAAA/update
 **Add Record**<br />
 ```
 localhost:8080/mahkey/domain.net/lxd/A/add/127.0.0.1
-v6.localhost:8080/mahkey/domain.net/lxd/AAAA/add/::1
+localhost:8080/mahkey/domain.net/lxd/AAAA/add/::1
 ```
 **Delete Record**<br />
 ```
 localhost:8080/mahkey/domain.net/lxd/A/delete
-v6.localhost:8080/mahkey/domain.net/lxd/AAAA/delete
+localhost:8080/mahkey/domain.net/lxd/AAAA/delete
 ```

@@ -57,6 +57,9 @@ class MyHandler(SimpleHTTPRequestHandler):
             self.response(400,"error","invalid domain")
             return
         records = self.loadZone(domain)
+        if not records:
+            self.response(404,"error","zone file not found")
+            return
         if domain not in records or subdomain not in records[domain][type]:
             if param == "add":
                 zone = self.loadFile(self.dir+domain)

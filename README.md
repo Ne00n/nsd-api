@@ -33,6 +33,10 @@ Because python3 http service can't speak duelstack<br />
 localhost:8080/mahkey/domain.net/lxd/A/update
 v6.localhost:8080/mahkey/domain.net/lxd/AAAA/update
 ```
+**Request Cert**<br />
+```
+curl localhost:8080/mahkey/domain.net/lxd/request/cert
+```
 **Add Record**<br />
 ```
 localhost:8080/mahkey/domain.net/lxd/A/add/127.0.0.1

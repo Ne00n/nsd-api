@@ -18,12 +18,6 @@ Rename and edit the tokens in config.json
 cp configs/config.example.json configs/config.json
 cp configs/nsd-api.service /etc/systemd/system/
 ```
-Systemd service
-```
-cp /home/nsd-api/nsd-api/configs/nsd-api.service /etc/systemd/system/
-systemctl enable nsd-api
-systemctl start nsd-api
-```
 Give the nsd-api user permissions to modify the zones you want<br />
 ```
 cd /etc/nsd/nsd.conf.d/
@@ -40,6 +34,20 @@ Don't forget to add:<br />
 proxy_set_header X-Real-IP $remote_addr;
 ```
 Because python3 http service can't speak duelstack<br />
+
+#Nginx
+Edit you must
+```
+cp /home/nsd-api/nsd-api/configs/nginx.example /etc/nginx/sites-enabled/nsd-api
+systemctl restart nginx
+```
+
+#Systemd
+```
+cp /home/nsd-api/nsd-api/configs/nsd-api.service /etc/systemd/system/
+systemctl enable nsd-api
+systemctl start nsd-api
+```
 
 # Examples
 **DynDNS**<br />

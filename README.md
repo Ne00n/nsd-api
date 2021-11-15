@@ -2,13 +2,27 @@
 python3 webservice providing a simple API to change nsd nameserver records<br />
 
 **Dependencies**<br />
-none
+simple_acme_dns
 
 # Setup<br />
+```
+apt-get install python3 pip3 -y
+adduser nsd-api --disabled-login
+su nsd-api
+cd; git clone https://github.com/Ne00n/nsd-api.git
+pip3 install simple_acme_dns
+cd nsd-api
+```
 Rename and edit the tokens in config.json
 ```
 cp configs/config.example.json configs/config.json
 cp configs/nsd-api.service /etc/systemd/system/
+```
+Systemd service
+```
+cp /home/nsd-api/nsd-api/configs/nsd-api.service /etc/systemd/system/
+systemctl enable nsd-api
+systemctl start nsd-api
 ```
 Give the nsd-api user permissions to modify the zones you want<br />
 ```

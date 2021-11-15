@@ -35,14 +35,14 @@ proxy_set_header X-Real-IP $remote_addr;
 ```
 Because python3 http service can't speak duelstack<br />
 
-#Nginx
+# Nginx
 Edit you must
 ```
 cp /home/nsd-api/nsd-api/configs/nginx.example /etc/nginx/sites-enabled/nsd-api
 systemctl restart nginx
 ```
 
-#Systemd
+# Systemd
 ```
 cp /home/nsd-api/nsd-api/configs/nsd-api.service /etc/systemd/system/
 systemctl enable nsd-api

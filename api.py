@@ -7,6 +7,7 @@ class MyHandler(SimpleHTTPRequestHandler):
     print("Loading config")
     with open('configs/config.json') as f:
         config = json.load(f)
+    print("Ready")
 
     def response(self,httpCode,key,msg):
         self.send_response(httpCode)

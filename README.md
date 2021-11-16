@@ -6,7 +6,7 @@ simple_acme_dns
 
 # Setup<br />
 ```
-apt-get install python3 python3-pip git -y
+apt-get install python3 python3-pip git libffi-dev -y
 adduser nsd-api --disabled-login
 su nsd-api
 cd; git clone https://github.com/Ne00n/nsd-api.git

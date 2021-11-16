@@ -1,4 +1,4 @@
-import simple_acme_dns, requests, socket, time, json, os, re
+import simple_acme_dns, socket, time, json, os, re
 from pathlib import Path
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
@@ -7,14 +7,6 @@ class MyHandler(SimpleHTTPRequestHandler):
     print("Loading config")
     with open('configs/config.json') as f:
         config = json.load(f)
-
-    print("Getting current IP")
-    request = requests.get('https://ip.seeip.org/',allow_redirects=False,timeout=5)
-    if request.status_code == 200:
-        ip = request.text
-    else:
-        exit("Could not fetch IP")
-    print("Ready")
 
     def response(self,httpCode,key,msg):
         self.send_response(httpCode)

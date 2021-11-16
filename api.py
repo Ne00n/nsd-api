@@ -101,7 +101,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             return False
         finally:
             for token in tokens:
-                response = self.delRecord("_acme-challenge",domain,"TXT",token)
+                response = self.delRecord("_acme-challenge",domain,"TXT","",token)
                 if not response: return False
 
         return fullchain,privkey

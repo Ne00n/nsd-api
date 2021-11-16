@@ -61,9 +61,10 @@ class MyHandler(SimpleHTTPRequestHandler):
         zone = self.loadFile(self.dir+domain)
         if not zone: return False
         if records == "":
-            zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+target, "", zone)
+            key = '"'+target+'"' if type == "TXT" else target
         else:
-            zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target'], "", zone)
+            key = '"'+records[domain][type][subdomain]['target']+'"' if type == "TXT" else records[domain][type][subdomain]['target']
+        zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+key, "", zone)
         response = self.saveFile(self.dir+domain,zone)
         if not response: return False
         os.system("sudo /usr/bin/systemctl reload nsd")

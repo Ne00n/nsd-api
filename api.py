@@ -105,7 +105,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             print(e)
             return False
         finally:
-            response = lf.delRecord(subdomain,domain,"TXT",self.ip)
+            response = delRecord(subdomain,domain,"TXT",self.ip)
             if not response: return False
 
         return fullchain,privkey

@@ -59,8 +59,8 @@ class MyHandler(SimpleHTTPRequestHandler):
             zone = zone + subdomain + "\t3600\tIN\t"+type+'\t"'+target+'"\n'
         else:
             zone = zone + subdomain + "\t3600\tIN\t"+type+"\t"+target+"\n"
-        self.saveFile(self.dir+domain,zone)
-        if not zone: return False
+        response = lf.saveFile(self.dir+domain,zone)
+        if not response: return False
         os.system("sudo /usr/bin/systemctl reload nsd")
         return True
 
@@ -71,8 +71,8 @@ class MyHandler(SimpleHTTPRequestHandler):
                 zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+target, "", zone)
         else:
             zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target'], "", zone)
-        self.saveFile(self.dir+domain,zone)
-        if not zone: return False
+        response = self.saveFile(self.dir+domain,zone)
+        if not response: return False
         os.system("sudo /usr/bin/systemctl reload nsd")
         return True
 
@@ -105,7 +105,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             print(e)
             return False
         finally:
-            response = delRecord(subdomain,domain,"TXT",self.ip)
+            response = self.delRecord(subdomain,domain,"TXT",self.ip)
             if not response: return False
 
         return fullchain,privkey

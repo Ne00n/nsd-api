@@ -61,7 +61,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         zone = self.loadFile(self.dir+domain)
         if not zone: return False
         if records == "":
-                zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+target, "", zone)
+            zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+target, "", zone)
         else:
             zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target'], "", zone)
         response = self.saveFile(self.dir+domain,zone)

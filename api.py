@@ -59,7 +59,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             zone = zone + subdomain + "\t3600\tIN\t"+type+'\t"'+target+'"\n'
         else:
             zone = zone + subdomain + "\t3600\tIN\t"+type+"\t"+target+"\n"
-        response = lf.saveFile(self.dir+domain,zone)
+        response = self.saveFile(self.dir+domain,zone)
         if not response: return False
         os.system("sudo /usr/bin/systemctl reload nsd")
         return True

@@ -85,9 +85,11 @@ class MyHandler(SimpleHTTPRequestHandler):
             print(e)
             return False
 
+        tokens = []
         for acmeDomain, token in client.request_verification_tokens():
             print("adding {domain} --> {token}".format(domain=acmeDomain, token=token))
-            response = self.addRecord(subdomain,domain,"TXT",self.ip)
+            tokens.append(token)
+            response = self.addRecord("_acme-challenge",domain,"TXT",token)
             if not response: return False
 
         print("Waiting for dns propagation")
@@ -105,8 +107,9 @@ class MyHandler(SimpleHTTPRequestHandler):
             print(e)
             return False
         finally:
-            response = self.delRecord(subdomain,domain,"TXT",self.ip)
-            if not response: return False
+            for token in tokens:
+                response = self.delRecord("_acme-challenge",domain,"TXT",token)
+                if not response: return False
 
         return fullchain,privkey
 

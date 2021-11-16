@@ -46,7 +46,11 @@ class MyHandler(SimpleHTTPRequestHandler):
         return True
 
     def saveFile(self,file,data):
-        with open(file, "w") as file: file.write(data)
+        try:
+            with open(file, "w") as file: file.write(data)
+        except Exception as e:
+            return False
+        return True
 
     def addRecord(self,subdomain,domain,type,target):
         zone = self.loadFile(self.dir+domain)
@@ -56,6 +60,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         else:
             zone = zone + subdomain + "\t3600\tIN\t"+type+"\t"+target+"\n"
         self.saveFile(self.dir+domain,zone)
+        if not zone: return False
         os.system("sudo /usr/bin/systemctl reload nsd")
         return True
 
@@ -67,6 +72,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         else:
             zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target'], "", zone)
         self.saveFile(self.dir+domain,zone)
+        if not zone: return False
         os.system("sudo /usr/bin/systemctl reload nsd")
         return True
 

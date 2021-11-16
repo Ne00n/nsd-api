@@ -164,7 +164,10 @@ class MyHandler(SimpleHTTPRequestHandler):
 
         elif param == "cert":
             response = self.getCert(subdomain,domain)
-            print(response)
+            if response:
+                self.response(200,"success","cert generated")
+            else:
+                self.response(500,"error","could get cert, likely permission error")
 
         elif param == "delete":
             response = self.delRecord(subdomain,domain,type,records)

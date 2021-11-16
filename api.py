@@ -161,7 +161,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         elif param == "cert":
             response = self.getCert(subdomain,domain)
             if response:
-                self.response(200,"success","cert generated")
+                self.response(200,"success",{"fullchain":response[0],'privkey':response[1]})
             else:
                 self.response(500,"error","could get cert, likely permission error")
 

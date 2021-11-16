@@ -88,7 +88,7 @@ class MyHandler(SimpleHTTPRequestHandler):
 
         print("Waiting for dns propagation")
         try:
-            if client.check_dns_propagation(timeout=1200):
+            if client.check_dns_propagation(timeout=290):
                 print("Requesting certificate")
                 client.request_certificate()
                 fullchain = client.certificate.decode()

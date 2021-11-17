@@ -25,7 +25,7 @@ chmod 664 domain.com
 ```
 Give the nsd-api user pemissions to reload nsd<br />
 ```
-echo "nsd-api ALL=(ALL) NOPASSWD: /usr/bin/systemctl reload nsd" >> /etc/sudoers
+echo "nsd-api ALL=(ALL) NOPASSWD: /bin/systemctl reload nsd" >> /etc/sudoers
 ```
 Put Nginx or whatever you want in front as reverse proxy to provide TLS connections<br />
 Don't forget to add:<br />

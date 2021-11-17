@@ -88,10 +88,15 @@ class MyHandler(SimpleHTTPRequestHandler):
 
         print("Waiting for dns propagation")
         try:
-            print("Requesting certificate")
-            client.request_certificate(5)
-            fullchain = client.certificate.decode()
-            privkey = client.private_key.decode()
+            if client.check_dns_propagation(timeout=290):
+                print("Requesting certificate")
+                client.request_certificate()
+                fullchain = client.certificate.decode()
+                privkey = client.private_key.decode()
+            else:
+                client.deactivate_account()
+                print("Failed to issue certificate for " + str(client.domains))
+                return False
         except Exception as e:
             print(e)
             return False

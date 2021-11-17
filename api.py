@@ -54,7 +54,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             zone = zone + subdomain + "\t3600\tIN\t"+type+"\t"+target+"\n"
         response = self.saveFile(self.dir+domain,zone)
         if not response: return False
-        os.system("sudo /usr/bin/systemctl reload nsd")
+        os.system("sudo /bin/systemctl reload nsd")
         return True
 
     def delRecord(self,subdomain,domain,type,records="",target=""):
@@ -67,7 +67,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+key+"\n", "", zone)
         response = self.saveFile(self.dir+domain,zone)
         if not response: return False
-        os.system("sudo /usr/bin/systemctl reload nsd")
+        os.system("sudo /bin/systemctl reload nsd")
         return True
 
     def getCert(self,subdomain,domain):
@@ -151,7 +151,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             zone = self.loadFile(self.dir+domain)
             zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target'], subdomain+'\t300\tIN\t'+type+'\t'+self.headers.get("X-Real-IP")+"\n", zone)
             self.saveFile(self.dir+domain,zone)
-            os.system("sudo /usr/bin/systemctl reload nsd")
+            os.system("sudo /bin/systemctl reload nsd")
             self.response(200,"success","record updated")
 
         elif param == "cert":

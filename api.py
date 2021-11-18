@@ -36,7 +36,6 @@ class MyHandler(SimpleHTTPRequestHandler):
             with open(file, 'r') as file: return file.read()
         except Exception as e:
             return False
-        return True
 
     def saveFile(self,file,data):
         try:

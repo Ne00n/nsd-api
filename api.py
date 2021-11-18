@@ -76,7 +76,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         os.system("sudo /bin/systemctl reload nsd")
         return True
 
-    def getCert(self,subdomain,domain,token):
+    def getCert(self,subdomain,domain,authToken):
         #directory = "https://acme-v02.api.letsencrypt.org/directory"
         directory = "https://acme-staging-v02.api.letsencrypt.org/directory"
         try:
@@ -91,7 +91,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             tokens.append(token)
             response = self.addRecord("_acme-challenge",domain,"TXT",token)
             if not response: return False
-            response = self.call(f"https://{self.config['remote'][0]}/{token}/{domain}/{subdomain}/TXT/add/{token}")
+            response = self.call(f"https://{self.config['remote'][0]}/{authToken}/{domain}/{subdomain}/TXT/add/{token}")
             if not response:
                 self.delRecord("_acme-challenge",domain,"TXT",token)
                 return False
@@ -114,7 +114,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             for token in tokens:
                 response = self.delRecord("_acme-challenge",domain,"TXT",token)
                 if not response: return False
-                response = self.call(f"https://{self.config['remote'][0]}/{token}/{domain}/{subdomain}/TXT/del/{token}")
+                response = self.call(f"https://{self.config['remote'][0]}/{authToken}/{domain}/{subdomain}/TXT/del/{token}")
                 if not response: return False
 
         return fullchain,privkey

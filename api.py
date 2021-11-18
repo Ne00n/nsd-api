@@ -115,7 +115,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                 response = self.delRecord("_acme-challenge",domain,"TXT",token)
                 if not response: return False
                 response = self.call(f"https://{self.config['remote'][0]}/{token}/{domain}/{subdomain}/TXT/del/{token}")
-                if not response return False
+                if not response: return False
 
         return fullchain,privkey
 

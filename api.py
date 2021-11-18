@@ -28,7 +28,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                     if not parts[3] in records[zone]: records[zone][parts[3]] = {}
                     records[zone][parts[3]][parts[0]] = {}
                     records[zone][parts[3]][parts[0]]['ttl'] = parts[1]
-                    records[zone][parts[3]][parts[0]]['target'] = parts[4]
+                    records[zone][parts[3]][parts[0]]['target'] = parts[4].replace("\n","")
         return records
 
     def loadFile(self,file):

@@ -65,6 +65,6 @@ localhost:8080/mahkey/domain.net/lxd/AAAA/add/::1
 ```
 **Delete Record**<br />
 ```
-localhost:8080/mahkey/domain.net/lxd/A/delete
-localhost:8080/mahkey/domain.net/lxd/AAAA/delete
+localhost:8080/mahkey/domain.net/lxd/A/del/127.0.0.1
+localhost:8080/mahkey/domain.net/lxd/AAAA/del/::1
 ```

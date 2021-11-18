@@ -1,4 +1,4 @@
-import simple_acme_dns, socket, time, json, os, re
+import simple_acme_dns, requests, socket, time, json, os, re
 from pathlib import Path
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
@@ -14,6 +14,16 @@ class MyHandler(SimpleHTTPRequestHandler):
         self.send_header("Content-Type", "application/json")
         self.end_headers()
         self.wfile.write(bytes(json.dumps({key: msg}).encode()))
+
+    def call(self,url):
+        for run in range(2):
+            try:
+                r = requests.get(url)
+                if (r.status_code == 200): return True
+            except Exception as e:
+                print(e)
+            time.sleep(3)
+        return False
 
     def loadZone(self,zone):
         records = {}
@@ -56,20 +66,17 @@ class MyHandler(SimpleHTTPRequestHandler):
         os.system("sudo /bin/systemctl reload nsd")
         return True
 
-    def delRecord(self,subdomain,domain,type,records="",target=""):
+    def delRecord(self,subdomain,domain,type,target):
         zone = self.loadFile(self.dir+domain)
         if not zone: return False
-        if records == "":
-            key = '"'+target+'"' if type == "TXT" else target
-        else:
-            key = '"'+records[domain][type][subdomain]['target']+'"' if type == "TXT" else records[domain][type][subdomain]['target']
+        key = '"'+target+'"' if type == "TXT" else target
         zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+key+"\n", "", zone)
         response = self.saveFile(self.dir+domain,zone)
         if not response: return False
         os.system("sudo /bin/systemctl reload nsd")
         return True
 
-    def getCert(self,subdomain,domain):
+    def getCert(self,subdomain,domain,token):
         #directory = "https://acme-v02.api.letsencrypt.org/directory"
         directory = "https://acme-staging-v02.api.letsencrypt.org/directory"
         try:
@@ -84,6 +91,10 @@ class MyHandler(SimpleHTTPRequestHandler):
             tokens.append(token)
             response = self.addRecord("_acme-challenge",domain,"TXT",token)
             if not response: return False
+            response self.call(f"https://{self.config["remote"][0]}/{token}/{domain}/{subdomain}/TXT/add/{token}")
+            if not response:
+                self.delRecord("_acme-challenge",domain,"TXT",token)
+                return False
 
         print("Waiting for dns propagation")
         try:
@@ -101,8 +112,10 @@ class MyHandler(SimpleHTTPRequestHandler):
             return False
         finally:
             for token in tokens:
-                response = self.delRecord("_acme-challenge",domain,"TXT","",token)
+                response = self.delRecord("_acme-challenge",domain,"TXT",token)
                 if not response: return False
+                response self.call(f"https://{self.config["remote"][0]}/{token}/{domain}/{subdomain}/TXT/del/{token}")
+                if not response return False
 
         return fullchain,privkey
 
@@ -159,14 +172,14 @@ class MyHandler(SimpleHTTPRequestHandler):
             self.response(200,"success","record updated")
 
         elif param == "cert":
-            response = self.getCert(subdomain,domain)
+            response = self.getCert(subdomain,domain,token)
             if response:
                 self.response(200,"success",{"fullchain":response[0],'privkey':response[1]})
             else:
                 self.response(500,"error","could get cert, likely permission error")
 
-        elif param == "delete":
-            response = self.delRecord(subdomain,domain,type,records)
+        elif param == "del":
+            response = self.delRecord(subdomain,domain,type,target)
             if response:
                 self.response(200,"success","record updated")
             else:

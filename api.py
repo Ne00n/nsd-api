@@ -60,7 +60,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         if subdomain == "_acme-challenge": ttl = 30
         if not zone: return False
         if type == "TXT":
-            zone = zone + subdomain + f"\t{ttl}\tIN\t{type}\t'{target}'\n"
+            zone = zone + subdomain + f'\t{ttl}\tIN\t{type}\t"{target}"\n'
         else:
             zone = zone + subdomain + f"\t{ttl}\tIN\t{type}\t{target}\n"
         response = self.saveFile(self.dir+domain,zone)
@@ -71,7 +71,7 @@ class MyHandler(SimpleHTTPRequestHandler):
     def delRecord(self,subdomain,domain,type,target):
         zone = self.loadFile(self.dir+domain)
         if not zone: return False
-        key = "'"+target+"'" if type == "TXT" else target
+        key = '"'+target+'"' if type == "TXT" else target
         zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+key+"\n", "", zone)
         response = self.saveFile(self.dir+domain,zone)
         if not response: return False

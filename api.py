@@ -55,13 +55,14 @@ class MyHandler(SimpleHTTPRequestHandler):
             return False
         return True
 
-    def addRecord(self,subdomain,domain,type,target):
+    def addRecord(self,subdomain,domain,type,target,ttl=3600):
         zone = self.loadFile(self.dir+domain)
+        if subdomain == "_acme-challenge": ttl = 30
         if not zone: return False
         if type == "TXT":
-            zone = zone + subdomain + "\t3600\tIN\t"+type+'\t"'+target+'"\n'
+            zone = zone + subdomain + f"\t{ttl}\tIN\t{type}\t'{target}'\n"
         else:
-            zone = zone + subdomain + "\t3600\tIN\t"+type+"\t"+target+"\n"
+            zone = zone + subdomain + f"\t{ttl}\tIN\t{type}\t{target}\n"
         response = self.saveFile(self.dir+domain,zone)
         if not response: return False
         os.system("sudo /bin/systemctl reload nsd")

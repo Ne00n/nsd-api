@@ -71,7 +71,7 @@ class MyHandler(SimpleHTTPRequestHandler):
     def delRecord(self,subdomain,domain,type,target):
         zone = self.loadFile(self.dir+domain)
         if not zone: return False
-        key = '"'+target+'"' if type == "TXT" else target
+        key = "'"+target+"'" if type == "TXT" else target
         zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+key+"\n", "", zone)
         response = self.saveFile(self.dir+domain,zone)
         if not response: return False

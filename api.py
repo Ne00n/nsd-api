@@ -57,7 +57,7 @@ class MyHandler(SimpleHTTPRequestHandler):
 
     def addRecord(self,subdomain,domain,type,target,ttl=3600):
         zone = self.loadFile(self.dir+domain)
-        if subdomain == "_acme-challenge": ttl = 30
+        if subdomain == "_acme-challenge": ttl = 1
         if not zone: return False
         if type == "TXT":
             zone = zone + subdomain + f'\t{ttl}\tIN\t{type}\t"{target}"\n'

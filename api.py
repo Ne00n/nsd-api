@@ -1,4 +1,5 @@
 import simple_acme_dns, requests, socket, time, json, os, re
+#from Class import simple_acme_dns
 from pathlib import Path
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
@@ -91,10 +92,11 @@ class MyHandler(SimpleHTTPRequestHandler):
             tokens.append(token)
             response = self.addRecord("_acme-challenge",domain,"TXT",token)
             if not response: return False
-            response = self.call(f"https://{self.config['remote'][0]}/{authToken}/{domain}/{subdomain}/TXT/add/{token}")
-            if not response:
-                self.delRecord("_acme-challenge",domain,"TXT",token)
-                return False
+            for remote in self.config['remote']:
+                response = self.call(f"https://{remote}/{authToken}/{domain}/_acme-challenge/TXT/add/{token}")
+                if not response:
+                    self.delRecord("_acme-challenge",domain,"TXT",token)
+                    return False
 
         print("Waiting for dns propagation")
         try:
@@ -114,8 +116,9 @@ class MyHandler(SimpleHTTPRequestHandler):
             for token in tokens:
                 response = self.delRecord("_acme-challenge",domain,"TXT",token)
                 if not response: return False
-                response = self.call(f"https://{self.config['remote'][0]}/{authToken}/{domain}/{subdomain}/TXT/del/{token}")
-                if not response: return False
+                for remote in self.config['remote']:
+                    response = self.call(f"https://{remote}/{authToken}/{domain}/_acme-challenge/TXT/del/{token}")
+                    if not response: return False
 
         return fullchain,privkey
 

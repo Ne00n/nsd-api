@@ -81,7 +81,7 @@ class MyHandler(SimpleHTTPRequestHandler):
     def getCert(self,subdomain,domain,authToken):
         directory = "https://acme-v02.api.letsencrypt.org/directory"
         #directory = "https://acme-staging-v02.api.letsencrypt.org/directory"
-        if subdomain != "": subdomain = "."+subdomain
+        if subdomain != "": subdomain = subdomain+"."
         try:
             client = simple_acme_dns.ACMEClient(domains=[subdomain+domain],email=self.config["email"],directory=directory,nameservers=["8.8.8.8", "1.1.1.1"],new_account=True,generate_csr=True)
         except Exception as e:

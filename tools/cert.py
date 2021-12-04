@@ -2,9 +2,12 @@ import requests, json, time, sys, os
 from random import randint
 from datetime import datetime
 
-path = os.getcwd()
+path = ""
+if len(sys.argv) == 2:
+    path = sys.argv[1]
+
 print("Loading domains.json")
-with open(f"{path}/domains.json") as f:
+with open(f"{path}domains.json") as f:
     domains = json.load(f)
 
 if not os.path.isdir("certs"): os.mkdir('certs')
@@ -31,9 +34,9 @@ def getCert(domains,fullDomain,path):
     cert = fetch(domain,url)
     if cert:
         print(f"Saving Certificate for {fullDomain}")
-        with open(f"{path}/certs/{fullDomain}-fullchain.pem", 'w') as out:
+        with open(f"{path}certs/{fullDomain}-fullchain.pem", 'w') as out:
             out.write(cert['success']['fullchain'])
-        with open(f"{path}/certs/{fullDomain}-privkey.pem", 'w') as out:
+        with open(f"{path}certs/{fullDomain}-privkey.pem", 'w') as out:
             out.write(cert['success']['privkey'])
         os.system("sudo /bin/systemctl reload nginx")
     else:
@@ -41,13 +44,13 @@ def getCert(domains,fullDomain,path):
 
 for fullDomain in domains['domains']:
     print(f"Checking {fullDomain}")
-    if not os.path.isfile(f"{path}/certs/{fullDomain}-fullchain.pem") or not os.path.isfile(f"{path}/certs/{fullDomain}-privkey.pem"):
+    if not os.path.isfile(f"{path}certs/{fullDomain}-fullchain.pem") or not os.path.isfile(f"{path}certs/{fullDomain}-privkey.pem"):
         print(f"Certificate not found for {fullDomain}")
         getCert(domains,fullDomain,path)
     else:
         print(f"Certificate found for {fullDomain}")
         print(f"Checking Certificate age for {fullDomain}")
-        if os.path.getmtime(f"{path}/certs/{fullDomain}-fullchain.pem") + (86400 * 30) < datetime.now().timestamp():
+        if os.path.getmtime(f"{path}certs/{fullDomain}-fullchain.pem") + (86400 * 30) < datetime.now().timestamp():
             print(f"Certificate for {fullDomain} is older than 30 Days, renewing")
             getCert(domains,fullDomain,path)
         else:

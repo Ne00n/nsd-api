@@ -34,6 +34,7 @@ def getCert(domains,fullDomain):
             out.write(cert['success']['fullchain'])
         with open(f"certs/{fullDomain}-privkey.pem", 'w') as out:
             out.write(cert['success']['privkey'])
+        os.system("sudo /bin/systemctl reload nginx")
     else:
         print(f"Failed to get Certificate for {fullDomain}")
 

@@ -87,6 +87,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         except Exception as e:
             print(e)
             return False
+        if subdomain != "": subdomain = "."+subdomain
 
         tokens = []
         for acmeDomain, token in client.request_verification_tokens():
@@ -95,7 +96,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             response = self.addRecord("_acme-challenge",domain,"TXT",token)
             if not response: return False
             for remote in self.config['remote']:
-                response = self.call(f"https://{remote}/{authToken}/{domain}/_acme-challenge/TXT/add/{token}")
+                response = self.call(f"https://{remote}/{authToken}/{domain}/_acme-challenge{subdomain}/TXT/add/{token}")
                 if not response:
                     self.delRecord(f"_acme-challenge{subdomain}",domain,"TXT",token)
                     return False
@@ -119,7 +120,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                 response = self.delRecord(f"_acme-challenge{subdomain}",domain,"TXT",token)
                 if not response: return False
                 for remote in self.config['remote']:
-                    response = self.call(f"https://{remote}/{authToken}/{domain}/_acme-challenge/TXT/del/{token}")
+                    response = self.call(f"https://{remote}/{authToken}/{domain}/_acme-challenge{subdomain}/TXT/del/{token}")
                     if not response: return False
 
         return fullchain,privkey

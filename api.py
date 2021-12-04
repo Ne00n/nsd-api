@@ -94,7 +94,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         for acmeDomain, token in client.request_verification_tokens():
             print("adding {domain} --> {token}".format(domain=acmeDomain, token=token))
             tokens.append(token)
-            response = self.addRecord("_acme-challenge",domain,"TXT",token)
+            response = self.addRecord(f"_acme-challenge{acmeSubdomain}",domain,"TXT",token)
             if not response: return False
             for remote in self.config['remote']:
                 response = self.call(f"https://{remote}/{authToken}/{domain}/_acme-challenge{acmeSubdomain}/TXT/add/{token}")

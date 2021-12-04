@@ -2,11 +2,9 @@ import requests, json, time, sys, os
 from random import randint
 from datetime import datetime
 
-path = ""
-if len(sys.argv) == 2:
-    path = sys.argv[1]
+path = os.path.realpath(__file__).replace("cert.py","")
 
-print("Loading domains.json")
+print(f"Loading {path}domains.json")
 with open(f"{path}domains.json") as f:
     domains = json.load(f)
 

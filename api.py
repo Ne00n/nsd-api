@@ -81,13 +81,14 @@ class MyHandler(SimpleHTTPRequestHandler):
     def getCert(self,subdomain,domain,authToken):
         directory = "https://acme-v02.api.letsencrypt.org/directory"
         #directory = "https://acme-staging-v02.api.letsencrypt.org/directory"
+        acmeSubdomain = ""
+        if subdomain != "": acmeSubdomain = "."+subdomain
         if subdomain != "": subdomain = subdomain+"."
         try:
             client = simple_acme_dns.ACMEClient(domains=[subdomain+domain],email=self.config["email"],directory=directory,nameservers=["8.8.8.8", "1.1.1.1"],new_account=True,generate_csr=True)
         except Exception as e:
             print(e)
             return False
-        if subdomain != "": subdomain = "."+subdomain
 
         tokens = []
         for acmeDomain, token in client.request_verification_tokens():
@@ -96,9 +97,9 @@ class MyHandler(SimpleHTTPRequestHandler):
             response = self.addRecord("_acme-challenge",domain,"TXT",token)
             if not response: return False
             for remote in self.config['remote']:
-                response = self.call(f"https://{remote}/{authToken}/{domain}/_acme-challenge{subdomain}/TXT/add/{token}")
+                response = self.call(f"https://{remote}/{authToken}/{domain}/_acme-challenge{acmeSubdomain}/TXT/add/{token}")
                 if not response:
-                    self.delRecord(f"_acme-challenge{subdomain}",domain,"TXT",token)
+                    self.delRecord(f"_acme-challenge{acmeSubdomain}",domain,"TXT",token)
                     return False
 
         print("Waiting for dns propagation")
@@ -117,10 +118,10 @@ class MyHandler(SimpleHTTPRequestHandler):
             return False
         finally:
             for token in tokens:
-                response = self.delRecord(f"_acme-challenge{subdomain}",domain,"TXT",token)
+                response = self.delRecord(f"_acme-challenge{acmeSubdomain}",domain,"TXT",token)
                 if not response: return False
                 for remote in self.config['remote']:
-                    response = self.call(f"https://{remote}/{authToken}/{domain}/_acme-challenge{subdomain}/TXT/del/{token}")
+                    response = self.call(f"https://{remote}/{authToken}/{domain}/_acme-challenge{acmeSubdomain}/TXT/del/{token}")
                     if not response: return False
 
         return fullchain,privkey

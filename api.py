@@ -15,16 +15,6 @@ class MyHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(bytes(json.dumps({key: msg}).encode()))
 
-    def call(self,url):
-        for run in range(2):
-            try:
-                r = requests.get(url)
-                if (r.status_code == 200): return True
-            except Exception as e:
-                print(e)
-            time.sleep(3)
-        return False
-
     def loadZone(self,zone):
         records = {}
         if Path(self.dir+zone).is_file():

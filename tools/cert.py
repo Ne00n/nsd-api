@@ -28,8 +28,8 @@ def getCert(config,fullDomain,path):
     print(f"Getting Certificate for {fullDomain}")
     subdomain,domain = splitDomain(fullDomain)
     #Lets Encrypt
-    #directory = "https://acme-v02.api.letsencrypt.org/directory"
-    directory = "https://acme-staging-v02.api.letsencrypt.org/directory"
+    directory = "https://acme-v02.api.letsencrypt.org/directory"
+    #directory = "https://acme-staging-v02.api.letsencrypt.org/directory"
     acmeSubdomain = ""
     if subdomain != "": acmeSubdomain = "."+subdomain
     if subdomain != "": subdomain = subdomain+"."

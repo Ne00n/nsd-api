@@ -1,5 +1,4 @@
-import simple_acme_dns, requests, socket, time, json, os, re
-#from Class import simple_acme_dns
+import requests, socket, time, json, os, re
 from pathlib import Path
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
@@ -78,54 +77,6 @@ class MyHandler(SimpleHTTPRequestHandler):
         os.system("sudo /bin/systemctl reload nsd")
         return True
 
-    def getCert(self,subdomain,domain,authToken):
-        directory = "https://acme-v02.api.letsencrypt.org/directory"
-        #directory = "https://acme-staging-v02.api.letsencrypt.org/directory"
-        acmeSubdomain = ""
-        if subdomain != "": acmeSubdomain = "."+subdomain
-        if subdomain != "": subdomain = subdomain+"."
-        try:
-            client = simple_acme_dns.ACMEClient(domains=[subdomain+domain],email=self.config["email"],directory=directory,nameservers=["8.8.8.8", "1.1.1.1"],new_account=True,generate_csr=True)
-        except Exception as e:
-            print(e)
-            return False
-
-        tokens = []
-        for acmeDomain, token in client.request_verification_tokens():
-            print("adding {domain} --> {token}".format(domain=acmeDomain, token=token))
-            tokens.append(token)
-            response = self.addRecord(f"_acme-challenge{acmeSubdomain}",domain,"TXT",token)
-            if not response: return False
-            for remote in self.config['remote']:
-                response = self.call(f"https://{remote}/{authToken}/{domain}/_acme-challenge{acmeSubdomain}/TXT/add/{token}")
-                if not response:
-                    self.delRecord(f"_acme-challenge{acmeSubdomain}",domain,"TXT",token)
-                    return False
-
-        print("Waiting for dns propagation")
-        try:
-            if client.check_dns_propagation(timeout=290):
-                print("Requesting certificate")
-                client.request_certificate()
-                fullchain = client.certificate.decode()
-                privkey = client.private_key.decode()
-            else:
-                client.deactivate_account()
-                print("Failed to issue certificate for " + str(client.domains))
-                return False
-        except Exception as e:
-            print(e)
-            return False
-        finally:
-            for token in tokens:
-                response = self.delRecord(f"_acme-challenge{acmeSubdomain}",domain,"TXT",token)
-                if not response: return False
-                for remote in self.config['remote']:
-                    response = self.call(f"https://{remote}/{authToken}/{domain}/_acme-challenge{acmeSubdomain}/TXT/del/{token}")
-                    if not response: return False
-
-        return fullchain,privkey
-
     def do_GET(self):
         if len(self.path) > 200:
             self.response(414,"error","way to fucking long")
@@ -177,13 +128,6 @@ class MyHandler(SimpleHTTPRequestHandler):
             self.saveFile(self.dir+domain,zone)
             os.system("sudo /bin/systemctl reload nsd")
             self.response(200,"success","record updated")
-
-        elif param == "cert":
-            response = self.getCert(subdomain,domain,token)
-            if response:
-                self.response(200,"success",{"fullchain":response[0],'privkey':response[1]})
-            else:
-                self.response(500,"error","could get cert, likely permission error")
 
         elif param == "del":
             response = self.delRecord(subdomain,domain,type,target)

@@ -1,4 +1,4 @@
-import requests, json, time, sys, os
+import simple_acme_dns, requests, json, time, sys, os
 from random import randint
 from datetime import datetime
 
@@ -24,21 +24,68 @@ def splitDomain(domain):
     else:
         return ".".join(parts[0:len(parts)-2]),".".join(parts[len(parts)-2:])
 
-def getCert(domains,fullDomain,path):
+def getCert(config,fullDomain,path):
     print(f"Getting Certificate for {fullDomain}")
-    endpoint = domains['remote'][0]
     subdomain,domain = splitDomain(fullDomain)
-    url = f"https://{endpoint}/{domains['token']}/{domain}/{subdomain}/request/cert"
-    cert = fetch(domain,url)
-    if cert:
+    #Lets Encrypt
+    #directory = "https://acme-v02.api.letsencrypt.org/directory"
+    directory = "https://acme-staging-v02.api.letsencrypt.org/directory"
+    acmeSubdomain = ""
+    if subdomain != "": acmeSubdomain = "."+subdomain
+    if subdomain != "": subdomain = subdomain+"."
+    print(f"Getting ACME tokens for {subdomain}{domain}")
+    try:
+        client = simple_acme_dns.ACMEClient(domains=[subdomain+domain],email=config["email"],directory=directory,nameservers=["8.8.8.8", "1.1.1.1"],new_account=True,generate_csr=True)
+    except Exception as e:
+        print(e)
+        return False
+
+    tokens,errors = [],0
+    for acmeDomain, token in client.request_verification_tokens():
+        print("adding {domain} --> {token}".format(domain=acmeDomain, token=token))
+        tokens.append(token)
+        for remote in config['remote']:
+            url = f"https://{remote}/{config['token']}/{domain}/_acme-challenge{acmeSubdomain}/TXT/add/{token}"
+            print(f"Running {url}")
+            try:
+                r = requests.get(url,verify=True, timeout=10)
+                print(f"Got {r.status_code} from {remote}")
+            except Exception as e:
+                errors += 1
+                print(e)
+
+        if errors == len(config['remote']): exit("Aborting, could not reach a single remote")
+
+        print("Waiting for dns propagation (290s)")
+        try:
+            if client.check_dns_propagation(timeout=290):
+                print("Requesting certificate")
+                client.request_certificate()
+                fullchain = client.certificate.decode()
+                privkey = client.private_key.decode()
+            else:
+                client.deactivate_account()
+                print("Failed to issue certificate for " + str(client.domains))
+                return False
+        except Exception as e:
+            print(f"Failed to get Certificate for {fullDomain}")
+            exit(e)
+        finally:
+            for token in tokens:
+                for remote in config['remote']:
+                    url = f"https://{remote}/{config['token']}/{domain}/_acme-challenge{acmeSubdomain}/TXT/del/{token}"
+                    print(f"Running {url}")
+                    try:
+                        r = requests.get(url,verify=True, timeout=10)
+                        print(f"Got {r.status_code} from {remote}")
+                    except Exception as e:
+                        print(e)
+
         print(f"Saving Certificate for {fullDomain}")
         with open(f"{path}certs/{fullDomain}-fullchain.pem", 'w') as out:
             out.write(cert['success']['fullchain'])
         with open(f"{path}certs/{fullDomain}-privkey.pem", 'w') as out:
             out.write(cert['success']['privkey'])
-        os.system("sudo /bin/systemctl reload nginx")
-    else:
-        print(f"Failed to get Certificate for {fullDomain}")
 
 for fullDomain in domains['domains']:
     print(f"Checking {fullDomain}")

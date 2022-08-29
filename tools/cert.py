@@ -83,9 +83,9 @@ def getCert(config,fullDomain,path):
 
         print(f"Saving Certificate for {fullDomain}")
         with open(f"{path}certs/{fullDomain}-fullchain.pem", 'w') as out:
-            out.write(cert['success']['fullchain'])
+            out.write(fullchain)
         with open(f"{path}certs/{fullDomain}-privkey.pem", 'w') as out:
-            out.write(cert['success']['privkey'])
+            out.write(privkey)
 
 for fullDomain in domains['domains']:
     print(f"Checking {fullDomain}")

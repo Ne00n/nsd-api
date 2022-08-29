@@ -1,5 +1,6 @@
 {
   "token":"mahkey",
+  "email":"test@test.com",
   "remote":[
     "ns1.domain.com",
     "ns2.domain.com"

@@ -24,6 +24,16 @@ def splitDomain(domain):
     else:
         return ".".join(parts[0:len(parts)-2]),".".join(parts[len(parts)-2:])
 
+def fetchUrl(remote,url):
+    print(f"Running {url}")
+    try:
+        r = requests.get(url,verify=True, timeout=10)
+        print(f"Got {r.status_code} from {remote}")
+        return 0
+    except Exception as e:
+        print(e)
+        return 1
+
 def getCert(config,fullDomain,path):
     print(f"Getting Certificate for {fullDomain}")
     subdomain,domain = splitDomain(fullDomain)
@@ -44,16 +54,7 @@ def getCert(config,fullDomain,path):
     for acmeDomain, token in client.request_verification_tokens():
         print("adding {domain} --> {token}".format(domain=acmeDomain, token=token))
         tokens.append(token)
-        for remote in config['remote']:
-            url = f"https://{remote}/{config['token']}/{domain}/_acme-challenge{acmeSubdomain}/TXT/add/{token}"
-            print(f"Running {url}")
-            try:
-                r = requests.get(url,verify=True, timeout=10)
-                print(f"Got {r.status_code} from {remote}")
-            except Exception as e:
-                errors += 1
-                print(e)
-
+        for remote in config['remote']: errors += fetchUrl(remote,f"https://{remote}/{config['token']}/{domain}/_acme-challenge{acmeSubdomain}/TXT/add/{token}")
         if errors == len(config['remote']): exit("Aborting, could not reach a single remote")
 
         print("Waiting for dns propagation (290s)")
@@ -69,17 +70,10 @@ def getCert(config,fullDomain,path):
                 return False
         except Exception as e:
             print(f"Failed to get Certificate for {fullDomain}")
-            exit(e)
+            return False
         finally:
             for token in tokens:
-                for remote in config['remote']:
-                    url = f"https://{remote}/{config['token']}/{domain}/_acme-challenge{acmeSubdomain}/TXT/del/{token}"
-                    print(f"Running {url}")
-                    try:
-                        r = requests.get(url,verify=True, timeout=10)
-                        print(f"Got {r.status_code} from {remote}")
-                    except Exception as e:
-                        print(e)
+                for remote in config['remote']: fetchUrl(remote,f"https://{remote}/{config['token']}/{domain}/_acme-challenge{acmeSubdomain}/TXT/del/{token}")
 
         print(f"Saving Certificate for {fullDomain}")
         with open(f"{path}certs/{fullDomain}-fullchain.pem", 'w') as out:

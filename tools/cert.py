@@ -91,7 +91,8 @@ for fullDomain in domains['domains']:
         print(f"Checking Certificate age for {fullDomain}")
         if os.path.getmtime(f"{path}certs/{fullDomain}-fullchain.pem") + (86400 * 30) < datetime.now().timestamp():
             print(f"Certificate for {fullDomain} is older than 30 Days, renewing")
-            getCert(domains,fullDomain,path)
+            resp = getCert(domains,fullDomain,path)
+            if not resp: exit()
         else:
             print(f"Skipping {fullDomain}")
     time.sleep(randint(60,120))

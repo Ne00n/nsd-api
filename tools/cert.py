@@ -57,9 +57,9 @@ def getCert(config,fullDomain,path):
         for remote in config['remote']: errors += fetchUrl(remote,f"https://{remote}/{config['token']}/{domain}/_acme-challenge{acmeSubdomain}/TXT/add/{token[0]}")
         if errors == len(config['remote']): exit("Aborting, could not reach a single remote")
 
-        print("Waiting for dns propagation (290s)")
+        print("Waiting for dns propagation (1200s)")
         try:
-            if client.check_dns_propagation(timeout=290):
+            if client.check_dns_propagation(timeout=1200):
                 print("Requesting certificate")
                 client.request_certificate()
                 fullchain = client.certificate.decode()

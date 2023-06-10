@@ -51,7 +51,7 @@ def getCert(config,fullDomain,path):
         return False
 
     tokens,errors = [],0
-    for acmeDomain, token in client.request_verification_tokens():
+    for acmeDomain, token in client.request_verification_tokens().items():
         print("adding {domain} --> {token}".format(domain=acmeDomain, token=token))
         tokens.append(token)
         for remote in config['remote']: errors += fetchUrl(remote,f"https://{remote}/{config['token']}/{domain}/_acme-challenge{acmeSubdomain}/TXT/add/{token}")

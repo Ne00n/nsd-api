@@ -53,8 +53,8 @@ def getCert(config,fullDomain,path):
     tokens,errors = [],0
     for acmeDomain, token in client.request_verification_tokens().items():
         print("adding {domain} --> {token}".format(domain=acmeDomain, token=token))
-        tokens.append(token)
-        for remote in config['remote']: errors += fetchUrl(remote,f"https://{remote}/{config['token']}/{domain}/_acme-challenge{acmeSubdomain}/TXT/add/{token}")
+        tokens.append(token[0])
+        for remote in config['remote']: errors += fetchUrl(remote,f"https://{remote}/{config['token']}/{domain}/_acme-challenge{acmeSubdomain}/TXT/add/{token[0]}")
         if errors == len(config['remote']): exit("Aborting, could not reach a single remote")
 
         print("Waiting for dns propagation (290s)")

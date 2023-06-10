@@ -80,6 +80,7 @@ def getCert(config,fullDomain,path):
             out.write(fullchain)
         with open(f"{path}certs/{fullDomain}-privkey.pem", 'w') as out:
             out.write(privkey)
+        return True
 
 for fullDomain in domains['domains']:
     print(f"Checking {fullDomain}")

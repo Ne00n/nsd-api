@@ -10,6 +10,7 @@ apt-get install python3 python3-pip git libffi-dev sudo -y
 adduser nsd-api --disabled-login
 su nsd-api
 cd; git clone https://github.com/Ne00n/nsd-api.git
+#Tested on  simple-acme-dns 2.0.0
 pip3 install simple_acme_dns
 cd nsd-api
 ```

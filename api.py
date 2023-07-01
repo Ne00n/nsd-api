@@ -114,7 +114,7 @@ class MyHandler(SimpleHTTPRequestHandler):
 
         elif param == "update":
             zone = self.loadFile(self.dir+domain)
-            zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target']+"\n", subdomain+'\t300\tIN\t'+type+'\t'+self.headers.get("X-Real-IP")+"\n", zone)
+            zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target'], subdomain+'\t300\tIN\t'+type+'\t'+self.headers.get("X-Real-IP"), zone)
             self.saveFile(self.dir+domain,zone)
             os.system("sudo /bin/systemctl reload nsd")
             self.response(200,"success","record updated")

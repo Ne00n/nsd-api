@@ -85,9 +85,9 @@ def getCert(config,fullDomain,path):
 
 for fullDomain in domains['domains']:
     print(f"Checking {fullDomain}")
-    fullDomain = fullDomain.replace("*.","wildcard.")
-    if not os.path.isfile(f"{path}certs/{fullDomain}-fullchain.pem") or not os.path.isfile(f"{path}certs/{fullDomain}-privkey.pem"):
-        print(f"Certificate not found for {fullDomain}")
+    fullDomainFiltered = fullDomain.replace("*.","wildcard.")
+    if not os.path.isfile(f"{path}certs/{fullDomainFiltered}-fullchain.pem") or not os.path.isfile(f"{path}certs/{fullDomainFiltered}-privkey.pem"):
+        print(f"Certificate not found for {fullDomainFiltered}")
         getCert(domains,fullDomain,path)
     else:
         print(f"Certificate found for {fullDomain}")

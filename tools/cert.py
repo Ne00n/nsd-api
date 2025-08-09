@@ -76,6 +76,7 @@ def getCert(config,fullDomain,path):
                 for remote in config['remote']: fetchUrl(remote,f"https://{remote}/{config['token']}/{domain}/_acme-challenge{acmeSubdomain}/TXT/del/{token}")
 
         print(f"Saving Certificate for {fullDomain}")
+        fullDomain = fullDomain.replace("*.","wildcard.")
         with open(f"{path}certs/{fullDomain}-fullchain.pem", 'w') as out:
             out.write(fullchain)
         with open(f"{path}certs/{fullDomain}-privkey.pem", 'w') as out:

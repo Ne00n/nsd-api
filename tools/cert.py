@@ -41,7 +41,7 @@ def getCert(config,fullDomain,path):
     directory = "https://acme-v02.api.letsencrypt.org/directory"
     #directory = "https://acme-staging-v02.api.letsencrypt.org/directory"
     acmeSubdomain = ""
-    if subdomain != "" and subdomain != "*" and subdomain != "wildcard.": acmeSubdomain = "."+subdomain
+    if subdomain != "" and subdomain != "*" and subdomain != "wildcard": acmeSubdomain = "."+subdomain
     if subdomain != "": subdomain = subdomain+"."
     print(f"Getting ACME tokens for {subdomain}{domain}")
     try:

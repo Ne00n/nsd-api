@@ -70,12 +70,12 @@ class MyHandler(SimpleHTTPRequestHandler):
         return True
 
     def blockIP(self,requestIP):
-        blocklist[requestIP] = int(time.time()) + randint(120, 300)
+        self.blocklist[requestIP] = int(time.time()) + randint(120, 300)
 
     def isBlocked(self,requestIP):
-        if requestIP in blocklist:
-            if time.time() > blocklist[requestIP]:
-                del blocklist[requestIP]
+        if requestIP in self.blocklist:
+            if time.time() > self.blocklist[requestIP]:
+                del self.blocklist[requestIP]
                 return False
             return True
         return False

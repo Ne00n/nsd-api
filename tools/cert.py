@@ -86,6 +86,7 @@ for fullDomain in domains['domains']:
     if not os.path.isfile(f"{path}certs/{fullDomainFiltered}-fullchain.pem") or not os.path.isfile(f"{path}certs/{fullDomainFiltered}-privkey.pem"):
         print(f"Certificate not found for {fullDomainFiltered}")
         getCert(domains,fullDomain,path)
+        time.sleep(randint(60,120))
     else:
         print(f"Certificate found for {fullDomain}")
         print(f"Checking Certificate age for {fullDomainFiltered}")
@@ -93,6 +94,6 @@ for fullDomain in domains['domains']:
             print(f"Certificate for {fullDomain} is older than 30 Days, renewing")
             resp = getCert(domains,fullDomain,path)
             if not resp: exit()
+            time.sleep(randint(60,120))
         else:
             print(f"Skipping {fullDomain}")
-    time.sleep(randint(60,120))

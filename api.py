@@ -4,6 +4,8 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 class MyHandler(SimpleHTTPRequestHandler):
     dir = "/etc/nsd/nsd.conf.d/"
+    blocklist = {}
+
     print("Loading config")
     with open('configs/config.json') as f:
         config = json.load(f)
@@ -67,12 +69,28 @@ class MyHandler(SimpleHTTPRequestHandler):
         os.system("sudo /bin/systemctl reload nsd")
         return True
 
+    def blockIP(self,requestIP):
+        blocklist[requestIP] = int(time.time()) + randint(120, 300)
+
+    def isBlocked(self,requestIP):
+        if requestIP in blocklist:
+            if time.time() > blocklist[requestIP]:
+                del blocklist[requestIP]
+                return False
+            return True
+        return False
+
     def do_GET(self):
         if len(self.path) > 200:
             self.response(414,"error","way to fucking long")
             return
-        parts = re.split(r'/', self.path)
 
+        #check if IP is blocked
+        if self.isBlocked(self.headers.get("X-Real-IP")):
+            self.response(500,"error","blocked")
+            return
+
+        parts = re.split(r'/', self.path)
         #If request to short or to long, abort
         if len(parts) < 6 or len(parts) > 7:
             self.response(400,"error","incomplete")
@@ -86,6 +104,7 @@ class MyHandler(SimpleHTTPRequestHandler):
 
         #Check if token matches
         if token not in self.config["tokens"]:
+            self.blockIP(self.headers.get("X-Real-IP"))
             self.response(401,"error","token required")
             return
 

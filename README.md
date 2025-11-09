@@ -52,8 +52,8 @@ systemctl start nsd-api
 # Examples
 **DynDNS**<br />
 ```
-localhost:8080/mahkey/domain.net/lxd/A/update
-v6.localhost:8080/mahkey/domain.net/lxd/AAAA/update
+localhost:8080/mahkey/domain.net/lxd/A/upd
+v6.localhost:8080/mahkey/domain.net/lxd/AAAA/upd
 ```
 **Add Record**<br />
 ```

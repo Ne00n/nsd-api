@@ -112,7 +112,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             else:
                 self.response(400,"error","record already exists")
 
-        elif param == "update":
+        elif param == "upd":
             zone = self.loadFile(self.dir+domain)
             zone = re.sub(subdomain+'\t*[0-9]+\t*IN\t*'+type+'\t*'+records[domain][type][subdomain]['target'], subdomain+'\t300\tIN\t'+type+'\t'+self.headers.get("X-Real-IP"), zone)
             self.saveFile(self.dir+domain,zone)

@@ -36,16 +36,12 @@ def fetchUrl(remote,url):
 
 def getCert(config,fullDomain,path):
     print(f"Getting Certificate for {fullDomain}")
-    subdomain,domain = splitDomain(fullDomain)
     #Lets Encrypt
     directory = "https://acme-v02.api.letsencrypt.org/directory"
     #directory = "https://acme-staging-v02.api.letsencrypt.org/directory"
-    acmeSubdomain = ""
-    if subdomain != "" and subdomain != "*" and subdomain != "wildcard": acmeSubdomain = "."+subdomain
-    if subdomain != "": subdomain = subdomain+"."
-    print(f"Getting ACME tokens for {subdomain}{domain}")
+    print(f"Getting ACME tokens for {fullDomain}")
     try:
-        client = simple_acme_dns.ACMEClient(domains=[subdomain+domain],email=config["email"],directory=directory,nameservers=["8.8.8.8", "1.1.1.1"],new_account=True,generate_csr=True)
+        client = simple_acme_dns.ACMEClient(domains=[fullDomain],email=config["email"],directory=directory,nameservers=["8.8.8.8", "1.1.1.1"],new_account=True,generate_csr=True)
     except Exception as e:
         print(e)
         return False
@@ -53,8 +49,9 @@ def getCert(config,fullDomain,path):
     tokens,errors = [],0
     for acmeDomain, token in client.request_verification_tokens().items():
         print("adding {domain} --> {token}".format(domain=acmeDomain, token=token))
+        subdomain, domain = splitDomain(acmeDomain)
         tokens.append(token[0])
-        for remote in config['remote']: errors += fetchUrl(remote,f"https://{remote}/{config['token']}/{domain}/_acme-challenge{acmeSubdomain}/TXT/add/{token[0]}")
+        for remote in config['remote']: errors += fetchUrl(remote,f"https://{remote}/{config['token']}/{domain}/{subdomain}/TXT/add/{token[0]}")
         if errors == len(config['remote']): exit("Aborting, could not reach a single remote")
 
         print("Waiting for dns propagation (1200s)")
@@ -73,7 +70,7 @@ def getCert(config,fullDomain,path):
             return False
         finally:
             for token in tokens:
-                for remote in config['remote']: fetchUrl(remote,f"https://{remote}/{config['token']}/{domain}/_acme-challenge{acmeSubdomain}/TXT/del/{token}")
+                for remote in config['remote']: fetchUrl(remote,f"https://{remote}/{config['token']}/{domain}/{subdomain}/TXT/del/{token}")
 
         print(f"Saving Certificate for {fullDomain}")
         fullDomain = fullDomain.replace("*.","wildcard.")
